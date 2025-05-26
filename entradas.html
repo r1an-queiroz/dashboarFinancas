@@ -56,52 +56,8 @@
     &copy; 2025 Dashboard Financeiro. Todos os direitos reservados.
   </footer>
 
-  <script>
-    // Checar login
-    const usuario = localStorage.getItem("usuarioLogado");
-    if (!usuario) window.location.href = "login.html";
-
-    const form = document.getElementById('formEntrada');
-    const tabela = document.getElementById('tabelaEntradas').querySelector('tbody');
-
-    // Carregar entradas do localStorage
-    let entradas = JSON.parse(localStorage.getItem('entradas')) || [];
-
-    function atualizarTabela() {
-      tabela.innerHTML = '';
-      entradas.forEach((entrada, i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${entrada.descricao}</td>
-          <td>R$ ${parseFloat(entrada.valor).toFixed(2)}</td>
-          <td>${entrada.data}</td>
-        `;
-        tabela.appendChild(tr);
-      });
-    }
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-
-      const novaEntrada = {
-        descricao: form.descricao.value,
-        valor: parseFloat(form.valor.value),
-        data: form.data.value
-      };
-
-      entradas.push(novaEntrada);
-      localStorage.setItem('entradas', JSON.stringify(entradas));
-      atualizarTabela();
-
-      form.reset();
-    });
-
-    atualizarTabela();
-
-    function logout() {
-      localStorage.removeItem("usuarioLogado");
-    }
-  </script>
+<script src="js/entradas.js"></script>
+  
 
 </body>
 </html>
