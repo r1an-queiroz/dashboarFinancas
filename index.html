@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Financeiro</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>Dashboard Financeiro</h1>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="entradas.html">Entradas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="metas.html">Metas</a>
+      <a href="investimentos.html">Investimentos</a>
+      <a href="login.html" onclick="logout()">Sair</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="resumo">
+      <div class="card entrada">
+        <h3>Entradas</h3>
+        <p>R$ 5.000,00</p>
+      </div>
+      <div class="card saida">
+        <h3>Saídas</h3>
+        <p>R$ 2.000,00</p>
+      </div>
+      <div class="card saldo">
+        <h3>Saldo</h3>
+        <p>R$ 3.000,00</p>
+      </div>
+    </div>
+
+    <div class="graficos">
+      <div class="grafico">
+        <h3>Entradas e Saídas</h3>
+        <canvas id="grafico1"></canvas>
+      </div>
+      <div class="grafico">
+        <h3>Comparativo Mensal</h3>
+        <canvas id="grafico2"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Dashboard Financeiro. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    // Verifica login
+    const usuario = localStorage.getItem("usuarioLogado");
+    if (!usuario) window.location.href = "login.html";
+  
+    // Pega o contexto dos gráficos
+    const ctx1 = document.getElementById('grafico1').getContext('2d');
+    const ctx2 = document.getElementById('grafico2').getContext('2d');
+  
+    // Pega transações do localStorage
+    const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+  
+    // Função para formatar valores em BRL
+    function formatarBRL(valor) {
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+  
+    // Calcula totais de entradas, saídas e saldo
+    let totalEntradas = 0;
+    let totalSaidas = 0;
+  
+    // Objeto para guardar soma por mês
+    let entradasPorMes = {};
+    let saidasPorMes = {};
+  
+    // Inicializa meses para gráfico
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  
+    // Inicializa arrays com 0 para cada mês
+    let entradasMes = Array(12).fill(0);
+    let saidasMes = Array(12).fill(0);
+  
+    transacoes.forEach(t => {
+      const valor = parseFloat(t.valor);
+      const data = new Date(t.data);
+      const mes = data.getMonth(); // 0 a 11
+  
+      if (t.tipo === 'entrada') {
+        totalEntradas += valor;
+        entradasMes[mes] += valor;
+      } else if (t.tipo === 'saida') {
+        totalSaidas += valor;
+        saidasMes[mes] += valor;
+      }
+    });
+  
+    const saldo = totalEntradas - totalSaidas;
+  
+    // Atualiza os cards
+    document.querySelector('.entrada p').textContent = formatarBRL(totalEntradas);
+    document.querySelector('.saida p').textContent = formatarBRL(totalSaidas);
+    document.querySelector('.saldo p').textContent = formatarBRL(saldo);
+  
+    // Gráfico Entradas e Saídas (barras)
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: meses,
+        datasets: [
+          {
+            label: 'Entradas',
+            data: entradasMes,
+            backgroundColor: '#28a745'
+          },
+          {
+            label: 'Saídas',
+            data: saidasMes,
+            backgroundColor: '#dc3545'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  
+    // Gráfico Saldo Mensal (linha)
+    const saldoMensal = entradasMes.map((entrada, i) => entrada - saidasMes[i]);
+  
+    new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: meses,
+        datasets: [
+          {
+            label: 'Saldo Mensal',
+            data: saldoMensal,
+            borderColor: '#ffc107',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+    }
+  </script>
+  
+  <script src="js/main.js"></script>
+</body>
+</html>

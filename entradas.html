@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Entradas - Dashboard Financeiro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Dashboard Financeiro</h1>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="entradas.html">Entradas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="metas.html">Metas</a>
+      <a href="investimentos.html">Investimentos</a>
+      <a href="login.html" onclick="logout()">Sair</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Gerenciar Entradas</h2>
+
+    <form id="formEntrada">
+      <label for="descricao">Descrição:</label><br />
+      <input type="text" id="descricao" name="descricao" required /><br /><br />
+
+      <label for="valor">Valor (R$):</label><br />
+      <input type="number" id="valor" name="valor" step="0.01" min="0.01" required /><br /><br />
+
+      <label for="data">Data:</label><br />
+      <input type="date" id="data" name="data" required /><br /><br />
+
+      <button type="submit">Adicionar Entrada</button>
+    </form>
+
+    <section style="margin-top: 2rem;">
+      <h3>Entradas cadastradas</h3>
+      <table id="tabelaEntradas" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Valor (R$)</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Entradas adicionadas aparecerão aqui -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <footer>
+    &copy; 2025 Dashboard Financeiro. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    // Checar login
+    const usuario = localStorage.getItem("usuarioLogado");
+    if (!usuario) window.location.href = "login.html";
+
+    const form = document.getElementById('formEntrada');
+    const tabela = document.getElementById('tabelaEntradas').querySelector('tbody');
+
+    // Carregar entradas do localStorage
+    let entradas = JSON.parse(localStorage.getItem('entradas')) || [];
+
+    function atualizarTabela() {
+      tabela.innerHTML = '';
+      entradas.forEach((entrada, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${entrada.descricao}</td>
+          <td>R$ ${parseFloat(entrada.valor).toFixed(2)}</td>
+          <td>${entrada.data}</td>
+        `;
+        tabela.appendChild(tr);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const novaEntrada = {
+        descricao: form.descricao.value,
+        valor: parseFloat(form.valor.value),
+        data: form.data.value
+      };
+
+      entradas.push(novaEntrada);
+      localStorage.setItem('entradas', JSON.stringify(entradas));
+      atualizarTabela();
+
+      form.reset();
+    });
+
+    atualizarTabela();
+
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+    }
+  </script>
+
+</body>
+</html>

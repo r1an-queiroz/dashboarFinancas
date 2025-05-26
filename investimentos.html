@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Investimentos & Dívidas - Dashboard Financeiro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Dashboard Financeiro</h1>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="entradas.html">Entradas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="metas.html">Metas</a>
+      <a href="investimentos.html">Investimentos</a>
+      <a href="login.html" onclick="logout()">Sair</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Gerenciar Investimentos e Dívidas</h2>
+
+    <form id="formInvestimento">
+      <label for="descricaoInvest">Descrição:</label><br />
+      <input type="text" id="descricaoInvest" name="descricaoInvest" required /><br /><br />
+
+      <label for="valorInvest">Valor (R$):</label><br />
+      <input type="number" id="valorInvest" name="valorInvest" step="0.01" required /><br /><br />
+
+      <label for="tipoInvest">Tipo:</label><br />
+      <select id="tipoInvest" name="tipoInvest" required>
+        <option value="">Selecione</option>
+        <option value="investimento">Investimento</option>
+        <option value="divida">Dívida</option>
+      </select><br /><br />
+
+      <label for="dataInvest">Data:</label><br />
+      <input type="date" id="dataInvest" name="dataInvest" required /><br /><br />
+
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <section style="margin-top: 2rem;">
+      <h3>Investimentos e Dívidas cadastrados</h3>
+      <table id="tabelaInvestimentos" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Valor (R$)</th>
+            <th>Tipo</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dados aparecerão aqui -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <footer>
+    &copy; 2025 Dashboard Financeiro. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    // Verifica login
+    const usuario = localStorage.getItem("usuarioLogado");
+    if (!usuario) window.location.href = "login.html";
+
+    const form = document.getElementById('formInvestimento');
+    const tabela = document.getElementById('tabelaInvestimentos').querySelector('tbody');
+
+    let investimentos = JSON.parse(localStorage.getItem('investimentos')) || [];
+
+    function atualizarTabela() {
+      tabela.innerHTML = '';
+      investimentos.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.descricao}</td>
+          <td>R$ ${parseFloat(item.valor).toFixed(2)}</td>
+          <td>${item.tipo.charAt(0).toUpperCase() + item.tipo.slice(1)}</td>
+          <td>${item.data}</td>
+        `;
+        tabela.appendChild(tr);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const novoItem = {
+        descricao: form.descricaoInvest.value,
+        valor: parseFloat(form.valorInvest.value),
+        tipo: form.tipoInvest.value,
+        data: form.dataInvest.value
+      };
+
+      investimentos.push(novoItem);
+      localStorage.setItem('investimentos', JSON.stringify(investimentos));
+      atualizarTabela();
+      form.reset();
+    });
+
+    atualizarTabela();
+
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+    }
+  </script>
+
+</body>
+</html>

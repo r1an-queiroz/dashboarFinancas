@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Categorias - Dashboard Financeiro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Dashboard Financeiro</h1>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="entradas.html">Entradas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="metas.html">Metas</a>
+      <a href="investimentos.html">Investimentos</a>
+      <a href="login.html" onclick="logout()">Sair</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Gerenciar Categorias</h2>
+
+    <form id="formCategoria">
+      <label for="nomeCategoria">Nome da Categoria:</label><br />
+      <input type="text" id="nomeCategoria" name="nomeCategoria" required /><br /><br />
+      <button type="submit">Adicionar Categoria</button>
+    </form>
+
+    <section style="margin-top: 2rem;">
+      <h3>Categorias cadastradas</h3>
+      <ul id="listaCategorias">
+        <!-- Categorias serão listadas aqui -->
+      </ul>
+    </section>
+  </div>
+
+  <footer>
+    &copy; 2025 Dashboard Financeiro. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    // Verifica login
+    const usuario = localStorage.getItem("usuarioLogado");
+    if (!usuario) window.location.href = "login.html";
+
+    const form = document.getElementById('formCategoria');
+    const lista = document.getElementById('listaCategorias');
+
+    let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+
+    function atualizarLista() {
+      lista.innerHTML = '';
+      categorias.forEach(cat => {
+        const li = document.createElement('li');
+        li.textContent = cat;
+        lista.appendChild(li);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const novaCategoria = form.nomeCategoria.value.trim();
+      if (novaCategoria && !categorias.includes(novaCategoria)) {
+        categorias.push(novaCategoria);
+        localStorage.setItem('categorias', JSON.stringify(categorias));
+        atualizarLista();
+        form.reset();
+      } else {
+        alert('Categoria inválida ou já existe!');
+      }
+    });
+
+    atualizarLista();
+
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+    }
+  </script>
+
+</body>
+</html>

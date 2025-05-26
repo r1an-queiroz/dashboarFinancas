@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Metas Financeiras - Dashboard Financeiro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Dashboard Financeiro</h1>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="entradas.html">Entradas</a>
+      <a href="categorias.html">Categorias</a>
+      <a href="metas.html">Metas</a>
+      <a href="investimentos.html">Investimentos</a>
+      <a href="login.html" onclick="logout()">Sair</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Gerenciar Metas Financeiras</h2>
+
+    <form id="formMeta">
+      <label for="descricaoMeta">Descrição da Meta:</label><br />
+      <input type="text" id="descricaoMeta" name="descricaoMeta" required /><br /><br />
+
+      <label for="valorMeta">Valor Alvo (R$):</label><br />
+      <input type="number" id="valorMeta" name="valorMeta" step="0.01" min="0.01" required /><br /><br />
+
+      <label for="dataMeta">Prazo (Data):</label><br />
+      <input type="date" id="dataMeta" name="dataMeta" required /><br /><br />
+
+      <button type="submit">Adicionar Meta</button>
+    </form>
+
+    <section style="margin-top: 2rem;">
+      <h3>Metas cadastradas</h3>
+      <table id="tabelaMetas" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Valor Alvo (R$)</th>
+            <th>Prazo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Metas aparecerão aqui -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <footer>
+    &copy; 2025 Dashboard Financeiro. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    // Verifica login
+    const usuario = localStorage.getItem("usuarioLogado");
+    if (!usuario) window.location.href = "login.html";
+
+    const form = document.getElementById('formMeta');
+    const tabela = document.getElementById('tabelaMetas').querySelector('tbody');
+
+    let metas = JSON.parse(localStorage.getItem('metas')) || [];
+
+    function atualizarTabela() {
+      tabela.innerHTML = '';
+      metas.forEach(meta => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${meta.descricao}</td>
+          <td>R$ ${parseFloat(meta.valor).toFixed(2)}</td>
+          <td>${meta.data}</td>
+        `;
+        tabela.appendChild(tr);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const novaMeta = {
+        descricao: form.descricaoMeta.value,
+        valor: parseFloat(form.valorMeta.value),
+        data: form.dataMeta.value
+      };
+
+      metas.push(novaMeta);
+      localStorage.setItem('metas', JSON.stringify(metas));
+      atualizarTabela();
+      form.reset();
+    });
+
+    atualizarTabela();
+
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+    }
+  </script>
+
+</body>
+</html>
