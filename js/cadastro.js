@@ -5,7 +5,13 @@ document.getElementById("formCadastro").addEventListener("submit", function (e) 
   const usuario = document.getElementById("usuario").value.trim();
   const senha = document.getElementById("senha").value.trim();
   const confirmarSenha = document.getElementById("confirmarSenha").value.trim();
+
   const erro = document.getElementById("erroCadastro");
+  const sucesso = document.getElementById("sucessoCadastro");
+
+  erro.textContent = "";
+  sucesso.textContent = "";
+  sucesso.style.display = "none";
 
   if (!nome || !usuario || !senha || !confirmarSenha) {
     erro.textContent = "Preencha todos os campos.";
@@ -27,6 +33,12 @@ document.getElementById("formCadastro").addEventListener("submit", function (e) 
 
   usuarios.push({ nome, usuario, senha });
   localStorage.setItem("usuariosFinanceiro", JSON.stringify(usuarios));
-  alert("Cadastro realizado com sucesso!");
-  window.location.href = "login.html";
+
+  sucesso.textContent = "🎉 Cadastro realizado com sucesso! Redirecionando...";
+  sucesso.style.display = "block";
+
+  // Espera 1,5s antes de redirecionar
+  setTimeout(() => {
+    window.location.href = "login.html";
+  }, 1500);
 });

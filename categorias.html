@@ -23,8 +23,12 @@
     <h2>Gerenciar Categorias</h2>
 
     <form id="formCategoria">
-      <label for="nomeCategoria">Nome da Categoria:</label><br />
-      <input type="text" id="nomeCategoria" name="nomeCategoria" required /><br /><br />
+      <label for="valorCategoria">Valor gasto (R$):</label><br />
+      <input type="number" id="valorCategoria" name="valorCategoria" required /><br /><br />
+      
+      <label for="dataCategoria">Data:</label><br />
+      <input type="date" id="dataCategoria" name="dataCategoria" required /><br /><br />
+      
       <button type="submit">Adicionar Categoria</button>
     </form>
 
@@ -41,6 +45,32 @@
   </footer>
 
   <script>
+    form.addEventListener('submit', e => {
+  e.preventDefault();
+  const nomeCategoria = form.nomeCategoria.value.trim();
+  const valor = parseFloat(form.valorCategoria.value);
+  const data = form.dataCategoria.value;
+
+  if (nomeCategoria && valor && data) {
+    const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+
+    transacoes.push({
+      tipo: "saida",
+      categoria: nomeCategoria,
+      valor: valor,
+      data: data,
+      descricao: `Gasto em ${nomeCategoria}`
+    });
+
+    localStorage.setItem('transacoes', JSON.stringify(transacoes));
+
+    alert("Gasto registrado com sucesso!");
+    form.reset();
+  } else {
+    alert('Preencha todos os campos corretamente!');
+  }
+});
+
     // Verifica login
     const usuario = localStorage.getItem("usuarioLogado");
     if (!usuario) window.location.href = "login.html";

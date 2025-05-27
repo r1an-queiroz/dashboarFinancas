@@ -1,3 +1,32 @@
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const descricao = form.descricaoMeta.value;
+  const valor = parseFloat(form.valorMeta.value);
+  const data = form.dataMeta.value;
+
+  if (descricao && valor && data) {
+    const transacoes = JSON.parse(localStorage.getItem("transacoes")) || [];
+
+    transacoes.push({
+      tipo: "meta",
+      descricao: descricao,
+      valor: valor,
+      data: data,
+      categoria: "Meta"
+    });
+
+    localStorage.setItem("transacoes", JSON.stringify(transacoes));
+    alert("Meta registrada com sucesso!");
+
+    atualizarTabela();
+    form.reset();
+  } else {
+    alert("Preencha todos os campos da meta.");
+  }
+});
+
+
 // Obter metas do localStorage
 function obterMetas() {
   const dados = localStorage.getItem("metas");
