@@ -4,6 +4,54 @@
   <meta charset="UTF-8" />
   <title>Categorias - Dashboard Financeiro</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Estilo extra específico para esta página */
+    .form-box {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    table th, table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    table th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    table tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .btnExcluir {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btnExcluir:hover {
+      background: #c82333;
+    }
+  </style>
 </head>
 <body>
 
@@ -20,24 +68,36 @@
   </header>
 
   <div class="container">
-    <h2>Gerenciar Categorias</h2>
+    <h2>Registrar Gasto por Categoria</h2>
 
-    <form id="formCategoria">
-      <label for="valorCategoria">Valor gasto (R$):</label><br />
-      <input type="number" id="valorCategoria" name="valorCategoria" required /><br /><br />
-      
-      <label for="dataCategoria">Data:</label><br />
-      <input type="date" id="dataCategoria" name="dataCategoria" required /><br /><br />
-      
-      <button type="submit">Adicionar Categoria</button>
-    </form>
+    <div class="form-box">
+      <form id="formCategoria">
+        <label for="nomeCategoria">Nome da Categoria:</label><br />
+        <input type="text" id="nomeCategoria" name="nomeCategoria" required /><br />
 
-    <section style="margin-top: 2rem;">
-      <h3>Categorias cadastradas</h3>
-      <ul id="listaCategorias">
-        <!-- Categorias serão listadas aqui -->
-      </ul>
-    </section>
+        <label for="valorCategoria">Valor Gasto (R$):</label><br />
+        <input type="number" id="valorCategoria" name="valorCategoria" step="0.01" required /><br />
+
+        <label for="dataCategoria">Data:</label><br />
+        <input type="date" id="dataCategoria" name="dataCategoria" required /><br />
+
+        <button type="submit">Adicionar Categoria</button>
+      </form>
+    </div>
+
+    <h3>Categorias Registradas</h3>
+    <table id="tabelaCategorias">
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Valor</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Categorias inseridas aparecerão aqui -->
+      </tbody>
+    </table>
   </div>
 
   <footer>
@@ -45,64 +105,57 @@
   </footer>
 
   <script>
-    form.addEventListener('submit', e => {
-  e.preventDefault();
-  const nomeCategoria = form.nomeCategoria.value.trim();
-  const valor = parseFloat(form.valorCategoria.value);
-  const data = form.dataCategoria.value;
-
-  if (nomeCategoria && valor && data) {
-    const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
-
-    transacoes.push({
-      tipo: "saida",
-      categoria: nomeCategoria,
-      valor: valor,
-      data: data,
-      descricao: `Gasto em ${nomeCategoria}`
-    });
-
-    localStorage.setItem('transacoes', JSON.stringify(transacoes));
-
-    alert("Gasto registrado com sucesso!");
-    form.reset();
-  } else {
-    alert('Preencha todos os campos corretamente!');
-  }
-});
-
-    // Verifica login
     const usuario = localStorage.getItem("usuarioLogado");
     if (!usuario) window.location.href = "login.html";
 
     const form = document.getElementById('formCategoria');
-    const lista = document.getElementById('listaCategorias');
+    const tabela = document.getElementById('tabelaCategorias').querySelector('tbody');
 
-    let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+    function atualizarTabela() {
+      const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+      const categorias = transacoes.filter(t => t.tipo === "saida");
 
-    function atualizarLista() {
-      lista.innerHTML = '';
+      tabela.innerHTML = '';
       categorias.forEach(cat => {
-        const li = document.createElement('li');
-        li.textContent = cat;
-        lista.appendChild(li);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${cat.categoria}</td>
+          <td>R$ ${parseFloat(cat.valor).toFixed(2)}</td>
+          <td>${cat.data}</td>
+        `;
+        tabela.appendChild(tr);
       });
     }
 
     form.addEventListener('submit', e => {
       e.preventDefault();
-      const novaCategoria = form.nomeCategoria.value.trim();
-      if (novaCategoria && !categorias.includes(novaCategoria)) {
-        categorias.push(novaCategoria);
-        localStorage.setItem('categorias', JSON.stringify(categorias));
-        atualizarLista();
+
+      const nomeCategoria = document.getElementById("nomeCategoria").value.trim();
+      const valor = parseFloat(document.getElementById("valorCategoria").value);
+      const data = document.getElementById("dataCategoria").value;
+
+      if (nomeCategoria && valor && data) {
+        const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+
+        transacoes.push({
+          tipo: "saida",
+          categoria: nomeCategoria,
+          valor: valor,
+          data: data,
+          descricao: `Gasto em ${nomeCategoria}`
+        });
+
+        localStorage.setItem('transacoes', JSON.stringify(transacoes));
+
+        alert("Gasto registrado com sucesso!");
         form.reset();
+        atualizarTabela();
       } else {
-        alert('Categoria inválida ou já existe!');
+        alert('Preencha todos os campos corretamente!');
       }
     });
 
-    atualizarLista();
+    atualizarTabela();
 
     function logout() {
       localStorage.removeItem("usuarioLogado");
