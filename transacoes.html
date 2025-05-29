@@ -15,6 +15,7 @@
       <a href="categorias.html">Categorias</a>
       <a href="metas.html">Metas</a>
       <a href="investimentos.html">Investimentos</a>
+      <a href="transacoes.html">Transações</a>
       <a href="login.html" onclick="logout()">Sair</a>
     </nav>
   </header>
@@ -45,6 +46,7 @@
       <input type="date" id="data" name="data" required /><br /><br />
 
       <button type="submit">Adicionar Transação</button>
+      <button onclick="exportarCSV()">Exportar CSV</button>
     </form>
 
     <section style="margin-top: 2rem;">
@@ -71,6 +73,20 @@
   </footer>
   <script src="js/transacoes.js"></script>
   <script>
+  function exportarCSV() {
+    const transacoes = JSON.parse(localStorage.getItem("transacoes")) || [];
+    let csv = "Descrição,Valor,Tipo,Categoria,Data\n";
+    transacoes.forEach(t => {
+      csv += `${t.descricao},${t.valor},${t.tipo},${t.categoria},${t.data}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "transacoes.csv";
+    a.click();
+}
 
     // Verifica login
     const usuario = localStorage.getItem("usuarioLogado");
@@ -105,7 +121,7 @@
           <td>${t.tipo === 'entrada' ? '+' : '-'} R$ ${parseFloat(t.valor).toFixed(2)}</td>
           <td>${t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1)}</td>
           <td>${t.categoria}</td>
-          <td>${t.data}</td>
+          <td>${cat.data}</td>
         `;
         tabela.appendChild(tr);
       });
