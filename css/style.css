@@ -164,7 +164,7 @@ h2, h3 {
   color: #007bff;
 }
 
-/* Cards - para index e outras páginas */
+/* Cards */
 .card {
   background: white;
   border-radius: 10px;
@@ -174,7 +174,6 @@ h2, h3 {
   width: 26%;
 }
 
-/* Cards e gráficos com transição suave */
 .card, .grafico, button, input, select {
   transition: all 0.3s ease;
 }
@@ -230,4 +229,86 @@ canvas {
   max-width: 600px;
   display: block;
   margin: 0 auto;
+}
+
+/* Responsivo */
+@media (max-width: 992px) {
+  .resumo {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    width: 90%;
+  }
+
+  .graficos {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .grafico {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  nav a {
+    margin-left: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    z-index: 999;
+    width: 200px;
+    left: -200px;
+    top: 0;
+    height: 100%;
+    background-color: #007bff;
+    transition: left 0.3s ease;
+    padding-top: 2rem;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding: 1.5rem;
+  }
+
+  .sidebar-toggle {
+    background: #007bff;
+    color: white;
+    padding: 0.6rem 1rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    margin: 1rem;
+    border-radius: 5px;
+  }
+}
+
+@media (max-width: 576px) {
+  body {
+    font-size: 0.95rem;
+  }
+
+  .card h3, .grafico h3 {
+    font-size: 1.1rem;
+  }
 }
