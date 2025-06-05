@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     const ctx = document.getElementById("graficoCategorias")?.getContext("2d");
-    if (!ctx) return;
+    if (!ctx || Object.keys(categorias).length === 0) return;
 
     if (window.graficoCategoriasInstance) window.graficoCategoriasInstance.destroy();
 
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const saidasData = labels.map(l => meses[l].saida);
 
     const ctx = document.getElementById("graficoMensal")?.getContext("2d");
-    if (!ctx) return;
+    if (!ctx || labels.length === 0) return;
 
     if (window.graficoMensalInstance) window.graficoMensalInstance.destroy();
 
@@ -110,7 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function gerarGraficoMetas() {
     const metas = transacoes.filter(t => t.tipo === "meta");
-
     const ctx = document.getElementById("graficoMetas")?.getContext("2d");
     if (!ctx || metas.length === 0) return;
 
@@ -164,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ✅ Executa tudo
+  // Executa tudo
   atualizarResumo();
   gerarGraficoCategorias();
   gerarGraficoMensal();
